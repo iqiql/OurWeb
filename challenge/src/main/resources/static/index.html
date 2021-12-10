@@ -1,0 +1,78 @@
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>网站主页</title>
+    <script type="text/javascript">
+        function doMessage(){
+            //先判断name是否为空
+            var name = document.getElementById("name").value;
+            var contract = document.getElementById("contract").value;
+
+            var regu = "^[ ]+$";
+            var re = new RegExp(regu);
+            if (name===""){
+                alert("昵称不可以为空");
+                return false;
+            }
+            else if (re.test(name)){
+                alert("昵称不能全为空格");
+                return false;
+            }
+            else if (contract===""){
+                alert("联系方式不能为空");
+                return false;
+            }
+            else if (re.test(contract)){
+                alert("联系方式不能全为空格");
+            }
+            else {
+                //发起ajax请求，传递参数给服务器，服务器返回数据
+                //1创建异步对象
+                var xmlHttp;
+                if (window.XMLHttpRequest) {
+                    xmlHttp=new XMLHttpRequest();//  IE7+, Firefox, Chrome, Opera, Safari 浏览器执行代码
+                } else {
+                    xmlHttp=new ActiveXObject("Microsoft.XMLHTTP");// IE6, IE5 浏览器执行代码
+                }
+                xmlHttp.onreadystatechange=function() {
+                    if (xmlHttp.readyState===4 && xmlHttp.status===200) {
+                        alert("提交成功！我们会在24小时内联系你");
+                    } else if(xmlHttp.readyState===4 && xmlHttp.status!==200) {
+                       alert("可能由于网络原因，提交失败了，你可稍后再试或直接电话联系我们！");
+                    }
+                }
+                //3初始化对象
+                //获取name,contract,message的值
+                //open函数的第三个参数为true 表示异步请求，使用异步对象发起请求后不用等待数据处理完毕就可以执行其他操作
+                //若为false 表示同步请求，必须等到当前请求处理完成之后【send()函数执行完毕】才可以进行下一步
+                xmlHttp.open("post", "/add/message", true);
+                // 如果想要使用post提交数据,必须添加此行
+                xmlHttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                var message = document.getElementById("message").value;
+                //4发送请求
+                var sendPar = '&name=' + name + '&contract=' + contract + '&message=' + message;
+                // alert("参数 = " + sendPar);
+                xmlHttp.send(sendPar);
+                //将用户原来写的东西都清空，免得用户以为自己写的留言没有提交
+                //更新dom
+                document.getElementById("name").value = "";
+                document.getElementById("contract").value = "";
+                document.getElementById("message").value = "";
+            }
+        }
+    </script>
+</head>
+<body>
+<h1>测试留言板</h1>
+<form>
+    <label>我们应该如何称呼你</label>
+    <input id="name" type="text"><br>
+    <label>您的电话或者邮箱</label>
+    <input id="contract" type="text"><br>
+    <label>您的需求（可以不填）</label>
+    <input id="message" type="text"><br>
+    <input type="button" value="留言" onclick="doMessage()"/><br>
+    <label>我们不会公开你的信息以及留言</label>
+</form>
+</body>
+</html>
